@@ -1,0 +1,2 @@
+sap.ui.define(["sap/fe/test/ListReport"],function(t){"use strict";var n={actions:{},assertions:{}};return new t({appId:"newfullstackapplication.incidentdetail",componentId:"IncidentsList",contextPath:"/Incidents"},n)});
+//# sourceMappingURL=IncidentsList.js.map

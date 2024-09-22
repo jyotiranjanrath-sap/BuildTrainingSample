@@ -1,0 +1,11 @@
+COLUMN TABLE newfullstackapplication_Incidents (
+  ID NVARCHAR(36) NOT NULL,
+  title NVARCHAR(100),
+  urgency_code NVARCHAR(5000),
+  customer_BusinessPartner NVARCHAR(100),
+  PRIMARY KEY(ID)
+) WITH ASSOCIATIONS (
+  MANY TO MANY JOIN newfullstackapplication_Conversations AS conversations ON (conversations.incidents_ID = ID),
+  MANY TO ONE JOIN newfullstackapplication_Urgency AS urgency ON (urgency.code = urgency_code),
+  MANY TO ONE JOIN newfullstackapplication_BusinessPartner AS customer ON (customer.BusinessPartner = customer_BusinessPartner)
+)

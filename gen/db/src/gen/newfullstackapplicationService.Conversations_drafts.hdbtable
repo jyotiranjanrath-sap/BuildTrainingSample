@@ -1,0 +1,15 @@
+COLUMN TABLE newfullstackapplicationService_Conversations_drafts (
+  ID NVARCHAR(36) NOT NULL,
+  "TIMESTAMP" SECONDDATE NULL,
+  author NVARCHAR(100) NULL,
+  message NVARCHAR(100) NULL,
+  incidents_ID NVARCHAR(36) NULL,
+  IsActiveEntity BOOLEAN,
+  HasActiveEntity BOOLEAN,
+  HasDraftEntity BOOLEAN,
+  DraftAdministrativeData_DraftUUID NVARCHAR(36) NOT NULL,
+  PRIMARY KEY(ID)
+) WITH ASSOCIATIONS (
+  MANY TO ONE JOIN newfullstackapplicationService_Incidents_drafts AS incidents ON (incidents.ID = incidents_ID),
+  MANY TO ONE JOIN newfullstackapplicationService_DraftAdministrativeData AS DraftAdministrativeData ON (DraftAdministrativeData.DraftUUID = DraftAdministrativeData_DraftUUID)
+)

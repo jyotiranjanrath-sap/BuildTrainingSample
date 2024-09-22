@@ -1,0 +1,16 @@
+COLUMN TABLE newfullstackapplicationService_Incidents_drafts (
+  ID NVARCHAR(36) NOT NULL,
+  title NVARCHAR(100) NULL,
+  urgency_code NVARCHAR(5000) NULL,
+  customer_BusinessPartner NVARCHAR(100) NULL,
+  IsActiveEntity BOOLEAN,
+  HasActiveEntity BOOLEAN,
+  HasDraftEntity BOOLEAN,
+  DraftAdministrativeData_DraftUUID NVARCHAR(36) NOT NULL,
+  PRIMARY KEY(ID)
+) WITH ASSOCIATIONS (
+  MANY TO MANY JOIN newfullstackapplicationService_Conversations_drafts AS conversations ON (conversations.incidents_ID = ID),
+  MANY TO ONE JOIN newfullstackapplicationService_Urgency AS urgency ON (urgency.code = urgency_code),
+  MANY TO ONE JOIN newfullstackapplicationService_BusinessPartner AS customer ON (customer.BusinessPartner = customer_BusinessPartner),
+  MANY TO ONE JOIN newfullstackapplicationService_DraftAdministrativeData AS DraftAdministrativeData ON (DraftAdministrativeData.DraftUUID = DraftAdministrativeData_DraftUUID)
+)

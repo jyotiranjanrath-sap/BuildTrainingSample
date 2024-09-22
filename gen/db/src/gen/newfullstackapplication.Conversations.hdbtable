@@ -1,0 +1,10 @@
+COLUMN TABLE newfullstackapplication_Conversations (
+  ID NVARCHAR(36) NOT NULL,
+  "TIMESTAMP" SECONDDATE,
+  author NVARCHAR(100),
+  message NVARCHAR(100),
+  incidents_ID NVARCHAR(36),
+  PRIMARY KEY(ID)
+) WITH ASSOCIATIONS (
+  MANY TO ONE JOIN newfullstackapplication_Incidents AS incidents ON (incidents.ID = incidents_ID)
+)

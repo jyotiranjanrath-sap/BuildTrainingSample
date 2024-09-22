@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+    <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml">
+    <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="newfullstackapplicationService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <Annotation Term="Core.Links">
+        <Collection>
+          <Record>
+            <PropertyValue Property="rel" String="author"/>
+            <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+          </Record>
+        </Collection>
+      </Annotation>
+      <EntityContainer Name="EntityContainer">
+        <EntitySet Name="Incidents" EntityType="newfullstackapplicationService.Incidents">
+          <NavigationPropertyBinding Path="conversations" Target="Conversations"/>
+          <NavigationPropertyBinding Path="urgency" Target="Urgency"/>
+          <NavigationPropertyBinding Path="customer" Target="BusinessPartner"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="Incidents"/>
+        </EntitySet>
+        <EntitySet Name="Conversations" EntityType="newfullstackapplicationService.Conversations">
+          <NavigationPropertyBinding Path="incidents" Target="Incidents"/>
+          <NavigationPropertyBinding Path="SiblingEntity" Target="Conversations"/>
+        </EntitySet>
+        <EntitySet Name="Urgency" EntityType="newfullstackapplicationService.Urgency">
+          <NavigationPropertyBinding Path="texts" Target="Urgency_texts"/>
+          <NavigationPropertyBinding Path="localized" Target="Urgency_texts"/>
+        </EntitySet>
+        <EntitySet Name="BusinessPartner" EntityType="newfullstackapplicationService.BusinessPartner"/>
+        <EntitySet Name="Urgency_texts" EntityType="newfullstackapplicationService.Urgency_texts"/>
+      </EntityContainer>
+      <EntityType Name="Incidents">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="title" Type="Edm.String" MaxLength="100"/>
+        <NavigationProperty Name="conversations" Type="Collection(newfullstackapplicationService.Conversations)" Partner="incidents">
+          <OnDelete Action="Cascade"/>
+        </NavigationProperty>
+        <NavigationProperty Name="urgency" Type="newfullstackapplicationService.Urgency">
+          <ReferentialConstraint Property="urgency_code" ReferencedProperty="code"/>
+        </NavigationProperty>
+        <Property Name="urgency_code" Type="Edm.String"/>
+        <NavigationProperty Name="customer" Type="newfullstackapplicationService.BusinessPartner">
+          <ReferentialConstraint Property="customer_BusinessPartner" ReferencedProperty="BusinessPartner"/>
+        </NavigationProperty>
+        <Property Name="customer_BusinessPartner" Type="Edm.String" MaxLength="100"/>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="newfullstackapplicationService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="newfullstackapplicationService.Incidents"/>
+      </EntityType>
+      <EntityType Name="Conversations">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="IsActiveEntity"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="timestamp" Type="Edm.DateTimeOffset"/>
+        <Property Name="author" Type="Edm.String" MaxLength="100"/>
+        <Property Name="message" Type="Edm.String" MaxLength="100"/>
+        <NavigationProperty Name="incidents" Type="newfullstackapplicationService.Incidents" Partner="conversations">
+          <ReferentialConstraint Property="incidents_ID" ReferencedProperty="ID"/>
+        </NavigationProperty>
+        <Property Name="incidents_ID" Type="Edm.Guid"/>
+        <Property Name="IsActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="true"/>
+        <Property Name="HasActiveEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <Property Name="HasDraftEntity" Type="Edm.Boolean" Nullable="false" DefaultValue="false"/>
+        <NavigationProperty Name="DraftAdministrativeData" Type="newfullstackapplicationService.DraftAdministrativeData" ContainsTarget="true"/>
+        <NavigationProperty Name="SiblingEntity" Type="newfullstackapplicationService.Conversations"/>
+      </EntityType>
+      <EntityType Name="Urgency">
+        <Key>
+          <PropertyRef Name="code"/>
+        </Key>
+        <Property Name="name" Type="Edm.String" MaxLength="255"/>
+        <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+        <Property Name="code" Type="Edm.String" Nullable="false"/>
+        <NavigationProperty Name="texts" Type="Collection(newfullstackapplicationService.Urgency_texts)">
+          <OnDelete Action="Cascade"/>
+        </NavigationProperty>
+        <NavigationProperty Name="localized" Type="newfullstackapplicationService.Urgency_texts">
+          <ReferentialConstraint Property="code" ReferencedProperty="code"/>
+        </NavigationProperty>
+      </EntityType>
+      <EntityType Name="BusinessPartner">
+        <Key>
+          <PropertyRef Name="BusinessPartner"/>
+        </Key>
+        <Property Name="BusinessPartner" Type="Edm.String" MaxLength="100" Nullable="false"/>
+        <Property Name="FirstName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="LastName" Type="Edm.String" MaxLength="100"/>
+      </EntityType>
+      <EntityType Name="DraftAdministrativeData">
+        <Key>
+          <PropertyRef Name="DraftUUID"/>
+        </Key>
+        <Property Name="DraftUUID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="CreationDateTime" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="CreatedByUser" Type="Edm.String" MaxLength="256"/>
+        <Property Name="DraftIsCreatedByMe" Type="Edm.Boolean"/>
+        <Property Name="LastChangeDateTime" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="LastChangedByUser" Type="Edm.String" MaxLength="256"/>
+        <Property Name="InProcessByUser" Type="Edm.String" MaxLength="256"/>
+        <Property Name="DraftIsProcessedByMe" Type="Edm.Boolean"/>
+      </EntityType>
+      <EntityType Name="Urgency_texts">
+        <Key>
+          <PropertyRef Name="locale"/>
+          <PropertyRef Name="code"/>
+        </Key>
+        <Property Name="locale" Type="Edm.String" MaxLength="14" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" MaxLength="255"/>
+        <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+        <Property Name="code" Type="Edm.String" Nullable="false"/>
+      </EntityType>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="newfullstackapplicationService.Incidents"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="newfullstackapplicationService.Incidents"/>
+      </Action>
+      <Action Name="draftPrepare" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="newfullstackapplicationService.Conversations"/>
+        <Parameter Name="SideEffectsQualifier" Type="Edm.String"/>
+        <ReturnType Type="newfullstackapplicationService.Conversations"/>
+      </Action>
+      <Action Name="draftActivate" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="newfullstackapplicationService.Incidents"/>
+        <ReturnType Type="newfullstackapplicationService.Incidents"/>
+      </Action>
+      <Action Name="draftEdit" IsBound="true" EntitySetPath="in">
+        <Parameter Name="in" Type="newfullstackapplicationService.Incidents"/>
+        <Parameter Name="PreserveChanges" Type="Edm.Boolean"/>
+        <ReturnType Type="newfullstackapplicationService.Incidents"/>
+      </Action>
+      <Annotations Target="newfullstackapplicationService.Incidents">
+        <Annotation Term="UI.FieldGroup" Qualifier="GeneratedGroup">
+          <Record Type="UI.FieldGroupType">
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="title"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="Urgency"/>
+                  <PropertyValue Property="Value" Path="urgency_code"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Label" String="Customer"/>
+                  <PropertyValue Property="Value" Path="customer_BusinessPartner"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="GeneratedFacet1"/>
+              <PropertyValue Property="Label" String="General Information"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#GeneratedGroup"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="Label" String="Conversations"/>
+              <PropertyValue Property="ID" String="Conversations"/>
+              <PropertyValue Property="Target" AnnotationPath="conversations/@UI.LineItem#Conversations"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="title"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="Urgency"/>
+              <PropertyValue Property="Value" Path="urgency_code"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Label" String="Customer"/>
+              <PropertyValue Property="Value" Path="customer_BusinessPartner"/>
+            </Record>
+          </Collection>
+        </Annotation>
+        <Annotation Term="UI.HeaderInfo">
+          <Record Type="UI.HeaderInfoType">
+            <PropertyValue Property="Title">
+              <Record Type="UI.DataField">
+                <PropertyValue Property="Value" Path="title"/>
+              </Record>
+            </PropertyValue>
+            <PropertyValue Property="TypeName" String=""/>
+            <PropertyValue Property="TypeNamePlural" String=""/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.EntityContainer/Incidents">
+        <Annotation Term="Common.DraftRoot">
+          <Record Type="Common.DraftRootType">
+            <PropertyValue Property="ActivationAction" String="newfullstackapplicationService.draftActivate"/>
+            <PropertyValue Property="EditAction" String="newfullstackapplicationService.draftEdit"/>
+            <PropertyValue Property="PreparationAction" String="newfullstackapplicationService.draftPrepare"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Incidents/ID">
+        <Annotation Term="Core.Computed" Bool="false"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Incidents/title">
+        <Annotation Term="Common.Label" String="Title"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Incidents/urgency_code">
+        <Annotation Term="Common.Text" Path="urgency/descr">
+          <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+        </Annotation>
+        <Annotation Term="Common.ValueList">
+          <Record Type="Common.ValueListType">
+            <PropertyValue Property="CollectionPath" String="Urgency"/>
+            <PropertyValue Property="Parameters">
+              <Collection>
+                <Record Type="Common.ValueListParameterInOut">
+                  <PropertyValue Property="LocalDataProperty" PropertyPath="urgency_code"/>
+                  <PropertyValue Property="ValueListProperty" String="code"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="Label" String="Urgency"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.ValueListWithFixedValues" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Incidents/customer_BusinessPartner">
+        <Annotation Term="Common.Text" Path="customer_BusinessPartner">
+          <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+        </Annotation>
+        <Annotation Term="Common.ValueList">
+          <Record Type="Common.ValueListType">
+            <PropertyValue Property="CollectionPath" String="BusinessPartner"/>
+            <PropertyValue Property="Parameters">
+              <Collection>
+                <Record Type="Common.ValueListParameterInOut">
+                  <PropertyValue Property="LocalDataProperty" PropertyPath="customer_BusinessPartner"/>
+                  <PropertyValue Property="ValueListProperty" String="BusinessPartner"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="FirstName"/>
+                </Record>
+                <Record Type="Common.ValueListParameterDisplayOnly">
+                  <PropertyValue Property="ValueListProperty" String="LastName"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+            <PropertyValue Property="Label" String="Customer"/>
+          </Record>
+        </Annotation>
+        <Annotation Term="Common.ValueListWithFixedValues" Bool="false"/>
+        <Annotation Term="UI.MultiLineText" Bool="false"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Incidents/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Incidents/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Incidents/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Incidents/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Conversations">
+        <Annotation Term="UI.LineItem" Qualifier="Conversations">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="author"/>
+              <PropertyValue Property="Label" String="author"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="message"/>
+              <PropertyValue Property="Label" String="message"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="timestamp"/>
+              <PropertyValue Property="Label" String="timestamp"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.EntityContainer/Conversations">
+        <Annotation Term="Common.DraftNode">
+          <Record Type="Common.DraftNodeType">
+            <PropertyValue Property="PreparationAction" String="newfullstackapplicationService.draftPrepare"/>
+          </Record>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Conversations/ID">
+        <Annotation Term="Core.Computed" Bool="false"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Conversations/timestamp">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Conversations/author">
+        <Annotation Term="Core.Computed" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Conversations/IsActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Conversations/HasActiveEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Conversations/HasDraftEntity">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Conversations/DraftAdministrativeData">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Urgency">
+        <Annotation Term="UI.Identification">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="name"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Urgency/name">
+        <Annotation Term="Common.Label" String="{i18n>Name}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Urgency/descr">
+        <Annotation Term="Common.Label" String="{i18n>Description}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Urgency/code">
+        <Annotation Term="Common.Text" Path="descr">
+          <Annotation Term="UI.TextArrangement" EnumMember="UI.TextArrangementType/TextOnly"/>
+        </Annotation>
+        <Annotation Term="Validation.AllowedValues">
+          <Collection>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="High"/>
+              <PropertyValue Property="Value" String="H"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="Medium"/>
+              <PropertyValue Property="Value" String="M"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="Low"/>
+              <PropertyValue Property="Value" String="L"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.DraftAdministrativeData">
+        <Annotation Term="Common.Label" String="{i18n>Draft_DraftAdministrativeData}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.DraftAdministrativeData/DraftUUID">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>Draft_DraftUUID}"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.DraftAdministrativeData/CreationDateTime">
+        <Annotation Term="Common.Label" String="{i18n>Draft_CreationDateTime}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.DraftAdministrativeData/CreatedByUser">
+        <Annotation Term="Common.Label" String="{i18n>Draft_CreatedByUser}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.DraftAdministrativeData/DraftIsCreatedByMe">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>Draft_DraftIsCreatedByMe}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.DraftAdministrativeData/LastChangeDateTime">
+        <Annotation Term="Common.Label" String="{i18n>Draft_LastChangeDateTime}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.DraftAdministrativeData/LastChangedByUser">
+        <Annotation Term="Common.Label" String="{i18n>Draft_LastChangedByUser}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.DraftAdministrativeData/InProcessByUser">
+        <Annotation Term="Common.Label" String="{i18n>Draft_InProcessByUser}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.DraftAdministrativeData/DraftIsProcessedByMe">
+        <Annotation Term="UI.Hidden" Bool="true"/>
+        <Annotation Term="Common.Label" String="{i18n>Draft_DraftIsProcessedByMe}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Urgency_texts/locale">
+        <Annotation Term="Common.Label" String="{i18n>LanguageCode}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Urgency_texts/name">
+        <Annotation Term="Common.Label" String="{i18n>Name}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Urgency_texts/descr">
+        <Annotation Term="Common.Label" String="{i18n>Description}"/>
+      </Annotations>
+      <Annotations Target="newfullstackapplicationService.Urgency_texts/code">
+        <Annotation Term="Validation.AllowedValues">
+          <Collection>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="High"/>
+              <PropertyValue Property="Value" String="H"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="Medium"/>
+              <PropertyValue Property="Value" String="M"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="Low"/>
+              <PropertyValue Property="Value" String="L"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

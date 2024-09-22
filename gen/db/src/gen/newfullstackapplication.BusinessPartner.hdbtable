@@ -1,0 +1,6 @@
+COLUMN TABLE newfullstackapplication_BusinessPartner (
+  BusinessPartner NVARCHAR(100) NOT NULL,
+  FirstName NVARCHAR(100),
+  LastName NVARCHAR(100),
+  PRIMARY KEY(BusinessPartner)
+)

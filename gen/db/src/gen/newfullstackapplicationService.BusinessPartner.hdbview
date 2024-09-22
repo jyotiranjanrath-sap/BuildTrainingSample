@@ -1,0 +1,5 @@
+VIEW newfullstackapplicationService_BusinessPartner AS SELECT
+  BusinessPartner_0.BusinessPartner,
+  BusinessPartner_0.FirstName,
+  BusinessPartner_0.LastName
+FROM newfullstackapplication_BusinessPartner AS BusinessPartner_0
